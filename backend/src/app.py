@@ -16,7 +16,7 @@ def getQR():
     upi_address = request.args.get("adr")
     user_name = request.args.get("name")
     imageData = generateUPIQR(upi_address,amount,user_name)
-    return send_file('upi_qr.png', mimetype='image/png')
+    return imageData
 
 if __name__ == "__main__":
     app.run(debug=True)
