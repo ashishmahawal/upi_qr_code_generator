@@ -1,14 +1,14 @@
 import qrcode
 import uuid
 
-def generateUPIQR(upi_address,amount,purpose="Ganjha",txn_note="Money"):
+def generateUPIQR(upi_address,amount,txn_note="Money"):
     # Txn Refernce Id
     try:
         tr = str(uuid.uuid4())
-        qr_data = f'upi://pay?pa={upi_address}&am={amount}&pn={purpose}&tr={tr}&tn={txn_note}'
+        qr_data = f'upi://pay?pa={upi_address}&am={amount}&tr={tr}&tn={txn_note}'
         print(f'Generating QR code for string : {qr_data}')
         # Create the QR code object
-        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr = qrcode.QRCode(version=1, box_size=4, border=3)
         # Add the QR code data
         qr.add_data(qr_data)
         # Make the QR code
