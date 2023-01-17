@@ -2,6 +2,10 @@ from io import BytesIO
 from flask import send_file
 import qrcode
 import uuid
+from PIL import Image
+import os.path
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 def generateUPIQR(upi_address,amount,user_name=None,txn_note="Money"):
     # Txn Refernce Id
@@ -16,13 +20,23 @@ def generateUPIQR(upi_address,amount,user_name=None,txn_note="Money"):
         # Make the QR code
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
-        return serve_pil_image(img)
+        # add overlay to QR
+        overlay = Image.open(os.path.join(script_dir, 'sample_overlay.jpg')).resize((40,40))
+        overlayed_bg = addOverlayToQR(img,overlay)
+        return serve_pil_image(overlayed_bg)
     except Exception as e:
         return {"error":f"Unable to generate QR Code ,Error: {e}"}
 
-
 def serve_pil_image(pil_img):
     img_io = BytesIO()
-    pil_img.save(img_io, 'JPEG', quality=70)
+    pil_img.save(img_io, 'PNG', quality=70)
     img_io.seek(0)
-    return send_file(img_io, mimetype='image/jpeg')
+    return send_file(img_io, mimetype='image/png')
+
+def addOverlayToQR(bg,overlay):
+    bg = bg.convert("RGBA")
+    overlay = overlay.convert("RGBA")
+    ol_delta = 20
+    placement_coordinates = (bg.width//2 - ol_delta,bg.height//2 - ol_delta )
+    bg.paste(overlay,placement_coordinates)
+    return bg
