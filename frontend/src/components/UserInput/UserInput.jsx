@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { ImageContext } from "../../storage/app-context";
 import { QRImage } from "./QRImage";
 import { TextField, Button,Typography } from "@mui/material/";
+import FileUpload from "../FileUpload/FileUpload";
 import "./UserInput.css"
 
 
@@ -11,14 +12,24 @@ export function UserInput(props) {
   const [amount, setAmount] = useState("");
   const [upi_adr, setUPIAdr] = useState("");
   const [counter, refreshImage] = useState(0);
+  const [newUserInfo, setNewUserInfo] = useState({
+    profileImages: []
+  });
+
+  const updateUploadedFiles = (files) =>
+    setNewUserInfo({ ...newUserInfo, profileImages: files });
+
   let ImageContext_1 = useContext(ImageContext);
   const generateQR = async (event) => {
     event.preventDefault();
+
+    console.log(newUserInfo.profileImages[0])
 
     let qrData = {
       name,
       amount,
       upi_adr,
+      img_data:newUserInfo.profileImages[0]
     };
     const responseData = await getUPIQR(qrData);
 
@@ -55,6 +66,12 @@ export function UserInput(props) {
           focused
           onChange={(e) => setName(e.target.value)}
         /> <br />
+        <FileUpload
+          accept=".jpg,.png,.jpeg"
+          label="Add Image to QR"
+          multiple
+          updateFilesCb={updateUploadedFiles}
+        />
         <Button variant="contained" color="success" onClick={generateQR}>
           Get QR
         </Button>
